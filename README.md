@@ -31,7 +31,7 @@ openssl passwd -1 "password"
 ```
 ### Add new user account
 Add new user account to the proxy_users section in to the file deploy.yaml
-```
+```yaml
 ---
 - hosts: all
   gather_facts: yes
@@ -46,7 +46,7 @@ Add new user account to the proxy_users section in to the file deploy.yaml
 ### Fix error
 Using a SSH password instead of a key is not possible because Host Key checking is enabled and sshpass does not support this. Please add this host's fingerprint to your known_hosts file to manage this host.
 
-```
+```shell script
 export ANSIBLE_HOST_KEY_CHECKING=False
 ```
 
