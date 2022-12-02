@@ -1,0 +1,36 @@
+---
+- name: Gather the package facts
+  package_facts:
+    manager: auto
+
+- name: Gather os specific variables
+  include_tasks: "{{ item }}"
+  with_first_found:
+    - "{{ ansible_distribution }}-{{ ansible_distribution_major_version}}.yml"
+    - "{{ ansible_distribution }}.yml"
+  when: "'cloudflare-warp' not in ansible_facts.packages"
+
+- name: Register
+  shell: warp-cli --accept-tos register
+
+- name: Set WARP proxy mode
+  shell: warp-cli --accept-tos set-mode {{ proxy_mode }}
+
+- name: Set WARP proxy port
+  shell: warp-cli --accept-tos set-proxy-port {{ proxy_port }}
+
+- name: Connect
+  shell: warp-cli --accept-tos connect
+
+- name: Enable always ON
+  shell: warp-cli --accept-tos enable-always-on
+
+- name: Get WARP connection status
+  shell: warp-cli --accept-tos status | grep Connected | wc -l
+  register: warp_status
+  failed_when: warp_status == 0
+
+- name: Test Socks5 WARP connection
+  shell: curl -s -x socks5h://127.0.0.1:{{ proxy_port }} ipinfo.io | grep Cloudflare | wc -l
+  register: ipinfo
+  failed_when: ipinfo == 0

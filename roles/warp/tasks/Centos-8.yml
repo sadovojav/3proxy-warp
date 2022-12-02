@@ -1,0 +1,8 @@
+---
+- name: Install the repository with RPM
+  shell: rpm -ivh https://pkg.cloudflareclient.com/cloudflare-release-el8.rpm
+
+- name: Update repositories cache and install "cloudflare-warp" package
+  yum:
+    name: cloudflare-warp
+    update_cache: yes

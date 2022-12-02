@@ -1,0 +1,30 @@
+{% if ansible_distribution != 'Ubuntu' %}daemon{% endif %}
+
+nserver 8.8.8.8
+nserver 8.8.4.4
+nscache 65536
+
+{% if enable_logs %}
+log /logs/3proxy-%y%m%d.log D
+rotate 60
+{% endif %}
+
+{% if proxy_users | length > 0 %}
+auth strong
+{% endif %}
+
+{% if proxy_users | length > 0 %}
+users {% for user in proxy_users %}"{{ user.name }}:CR:{{ user.hash }}" {% endfor %}
+{% endif %}
+
+allow * * * 80,8080-8088,443
+parent 1000 socks5 127.0.0.1 {{ warp_proxy_port }}
+allow * * * 80,8080-8088,443
+
+{% if proxy_socks %}
+socks -p{{ proxy_socks_port }} {{ proxy_socks_options }}
+{% endif %}
+
+{% if proxy_http %}
+proxy -p{{ proxy_http_port }} {{ proxy_http_options }}
+{% endif %}

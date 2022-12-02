@@ -1,0 +1,32 @@
+---
+- name: Gather os specific variables
+  include_tasks: "{{ item }}"
+  with_first_found:
+    - "{{ ansible_distribution }}-{{ ansible_distribution_major_version}}.yml"
+    - "{{ ansible_distribution }}.yml"
+
+- name: Configures 3proxy
+  template:
+    src: 3proxy.cfg.j2
+    dest: /usr/local/3proxy/conf/3proxy.cfg
+    owner: proxy
+    group: proxy
+  tags:
+    - config
+
+- name: Ensures 3proxy log dir exists
+  file:
+    name: /usr/local/3proxy/logs
+    state: directory
+    owner: proxy
+    group: proxy
+
+- name: Fix PID
+  shell: find /etc/ -type f -readable -writable -exec sed -i "s/\/var\/run\/3proxy\/3proxy.pid/\/tmp\/3proxy.pid/g" {} \;
+
+- name: Ensures 3proxy service is started and enabled
+  service:
+    name: 3proxy
+    enabled: true
+    state: started
+  ignore_errors: true

@@ -1,0 +1,3 @@
+---
+- name: Ensures 3proxy is installed
+  shell: wget https://github.com/3proxy/3proxy/releases/download/0.9.4/3proxy-0.9.4.x86_64.deb; dpkg -i 3proxy-0.9.4.x86_64.deb

@@ -1,0 +1,6 @@
+all:
+  hosts:
+    host-001:
+      ansible_ssh_host:
+      ansible_ssh_user:
+      ansible_ssh_password:
